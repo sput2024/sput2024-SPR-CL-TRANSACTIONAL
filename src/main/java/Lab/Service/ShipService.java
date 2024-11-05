@@ -1,9 +1,11 @@
 package Lab.Service;
 
 import Lab.Exceptions.InvalidTonnageException;
+import Lab.Exceptions.NegativeWeightException;
 import Lab.Model.Ship;
 import Lab.Repository.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,20 +21,29 @@ import java.util.List;
  * attempting to get all ships. No ships should be persisted if any ship in the array has a negative or zero
  * tonnage - we're left to assume some form of unwanted user error in that case.
  */
-@Service
+//@Service
+@Transactional(rollbackFor=InvalidTonnageException.class)
 public class ShipService {
+    
     ShipRepository shipRepository;
-    @Autowired
+   // @Autowired
+   
     public ShipService(ShipRepository shipRepository){
+        
         this.shipRepository = shipRepository;
     }
+
     /**
      * this is a bad way to save a list to the repository as you can just use the .saveAll method provided the table
      * has a CHECK constraint to check tonnage, but this gets the point across for the importance of @Transactional
      * @param ships transient ship entities
      * @throws InvalidTonnageException ships can not have negative tonnage (they'd sink)
      */
+    
+    //@Transactional(rollbackFor=InvalidTonnageException.class)
+   
     public List<Ship> addListShips(List<Ship> ships) throws InvalidTonnageException {
+    
         List<Ship> persistedShips = new ArrayList<>();
         for(int i = 0; i < ships.size(); i++){
             if(ships.get(i).getTonnage()<=0){

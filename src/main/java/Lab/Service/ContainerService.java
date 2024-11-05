@@ -6,7 +6,9 @@ import Lab.Model.Ship;
 import Lab.Repository.ContainerRepository;
 import Lab.Repository.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -32,16 +34,20 @@ import java.util.List;
  *
  * there is no need to modify this class.
  */
-@Transactional(rollbackFor = NegativeWeightException.class)
-@Service
+
+//@Service
+@Transactional(rollbackFor = {NegativeWeightException.class})
 public class ContainerService {
     ContainerRepository containerRepository;
     ShipRepository shipRepository;
-    @Autowired
+  //  @Autowired
+  
     public ContainerService(ContainerRepository containerRepository, ShipRepository shipRepository){
+    
         this.containerRepository = containerRepository;
         this.shipRepository = shipRepository;
     }
+   
     /**
      * this is a bad way to save a list to the repository as you can just use the .saveAll method provided the table
      * has a CHECK constraint to check tonnage, but this gets the point across for the importance of @Transactional.
@@ -51,7 +57,11 @@ public class ContainerService {
      * @throws NegativeWeightException ships can not have negative tonnage (they'd sink), containers can not have
      *                                 negative weight (they'd fly away)
      */
+   
+    
+   
     public List<Container> addListContainers(List<Container> containers) throws NegativeWeightException {
+    
         List<Container> persistedContainers = new ArrayList<>();
         for(int i = 0; i < containers.size(); i++){
             if(containers.get(i).getWeight()<=0){
